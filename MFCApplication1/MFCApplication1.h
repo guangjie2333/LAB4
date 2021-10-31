@@ -30,3 +30,4 @@ public:
 };
 
 extern CMFCApplication1App theApp;
+ 

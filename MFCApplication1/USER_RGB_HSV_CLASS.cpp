@@ -33,7 +33,7 @@ HSV_STRUCT USER_RGB_HSV_CLASS:: RGB2HSV(RGB_STRUCT rgb)
 { 
     // r,g,b values are from 0 to 1
     // h = [0,360], s = [0,1], v = [0,1]
-
+     
     float R, G, B;
     float min, max, delta, tmp;
     HSV_STRUCT hsv;

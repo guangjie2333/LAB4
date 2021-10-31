@@ -24,5 +24,5 @@ class USER_RGB_HSV_CLASS
         HSV_STRUCT RGB2HSV(RGB_STRUCT rgb);
         RGB_STRUCT HSV2RGB(HSV_STRUCT hsv);
 
-};
+}; 
 

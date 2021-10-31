@@ -138,7 +138,7 @@ void USER_BLINE_TRANSFORM::UnionRGB()
 		newPixelArray[i + 0] = newB_array[j];
 
 		j++;
-	}
+	} 
 }
 
 /*

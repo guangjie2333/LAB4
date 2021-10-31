@@ -22,7 +22,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 
-// 实现
+// 实现 
 protected:
 	HICON m_hIcon;
 

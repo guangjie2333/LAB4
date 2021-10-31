@@ -26,7 +26,7 @@
 class USER_BLINE_TRANSFORM
 {
 	//variable 
-	public:
+	public: 
 
 	protected:
 

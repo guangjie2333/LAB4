@@ -9,7 +9,7 @@
 
 #include <wingdi.h> 
 #include <afx.h>
-using namespace std;
+using namespace std; 
 
 /***********************引用头文件******************************/
 #include "USER_ALG.h"

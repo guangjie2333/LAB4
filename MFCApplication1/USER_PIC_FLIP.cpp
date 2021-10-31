@@ -232,7 +232,7 @@ void USER_PIC_FLIP::HFilp()
 		delete[] matrixR[j];
 		delete[] matrixG[j];
 		delete[] matrixB[j];
-	}
+	} 
 	delete[] matrixR;
 	delete[] matrixG;
 	delete[] matrixB;

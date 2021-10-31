@@ -27,7 +27,7 @@ USER_BAR_CLASS_DLG::USER_BAR_CLASS_DLG(CWnd* pParent /*=nullptr*/)
 }
 
 USER_BAR_CLASS_DLG::~USER_BAR_CLASS_DLG()
-{
+{ 
 }
 
 void USER_BAR_CLASS_DLG::DoDataExchange(CDataExchange* pDX)

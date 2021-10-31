@@ -24,7 +24,7 @@
 */
 class USER_FILTER
 {
-	//variable 
+	//variable  
 	public:
 		BYTE* pixelArray;
 		int  ArraySize;

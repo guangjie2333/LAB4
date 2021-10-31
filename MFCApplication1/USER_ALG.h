@@ -28,7 +28,7 @@ class USER_ALG
 	//variable 
 	public:
 
-	protected:
+	protected: 
 
 	private:
 	

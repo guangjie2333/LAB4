@@ -342,7 +342,7 @@ void USER_FILTER :: DealLowConvolution(BYTE** matrix)
 		}
 	}
 
-	//¾í»ý
+	//¾í»ý 
 	for (int i = 1; i < high - 1 ; i++)
 	{
 		for (int j = 1; j < width - 1; j++)

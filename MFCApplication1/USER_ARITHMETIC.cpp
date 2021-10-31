@@ -31,7 +31,7 @@ USER_ARITHMETIC::USER_ARITHMETIC(BYTE* ARRAY1, BYTE* ARRAY2, int ARRAYSIZE, BYTE
 	G_array1 = (BYTE*)new char[ArraySize / 3 + 1];
 	B_array1 = (BYTE*)new char[ArraySize / 3 + 1];
 
-	R_array2 = (BYTE*)new char[ArraySize / 3 + 1];
+	R_array2 = (BYTE*)new char[ArraySize / 3 + 1]; 
 	G_array2 = (BYTE*)new char[ArraySize / 3 + 1];
 	B_array2 = (BYTE*)new char[ArraySize / 3 + 1];
 }

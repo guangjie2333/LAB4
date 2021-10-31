@@ -962,7 +962,7 @@ void CMFCApplication1Dlg::TwoPic_Add()
 	  //以下代码保存memDC中的位图到文件 
 	BITMAP bmpInfo2;
 	GetObject(memBitmap2, sizeof(bmpInfo2), &bmpInfo2);//获得位图信息 
-
+	 
 	DWORD bmpBytesSize2 = bmpInfo2.bmWidthBytes * bmpInfo2.bmHeight * 3;
 
 	BITMAPFILEHEADER bfh2 = { 0 };//位图文件头 
