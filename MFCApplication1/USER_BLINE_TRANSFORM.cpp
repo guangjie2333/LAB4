@@ -1,6 +1,5 @@
 #include "pch.h"
-#include "USER_PIC_FLIP.h"
-
+#include "USER_BLINE_TRANSFORM.h"
 /*
 ********************************************************************************
 ********************************************************************************
@@ -11,7 +10,7 @@
 
 /*
 ******************************************************************************
-* 函数名称:	USER_PIC_FLIP
+* 函数名称:	USER_BLINE_TRANSFORM
 * 函数功能: 构造（初始化）函数
 * 输入参数:	ARRAY1 ：bmp图像的RGB三通道数据, h ：图像高  w:图像宽
 * 输出参数:	none
@@ -20,21 +19,27 @@
 * 注    意:
 *******************************************************************************
 */
-USER_PIC_FLIP::USER_PIC_FLIP(BYTE* ARRAY1, int h, int w)
+USER_BLINE_TRANSFORM::USER_BLINE_TRANSFORM(BYTE* ARRAY1, int h, int w, BYTE* ARRAY2)
 {
 	pixelArray = ARRAY1;
+	newPixelArray = ARRAY2;
 	high = h;
 	width = w;
 	ArraySize = high * width * 3;
+	newArraySize = ((high * 2 - 1) * (width * 2 - 1)) * 3;
 
 	R_array = (BYTE*)new char[ArraySize / 3 + 1];
 	G_array = (BYTE*)new char[ArraySize / 3 + 1];
 	B_array = (BYTE*)new char[ArraySize / 3 + 1];
+
+	newR_array = (BYTE*)new char[newArraySize / 3 + 1];
+	newG_array = (BYTE*)new char[newArraySize / 3 + 1];
+	newB_array = (BYTE*)new char[newArraySize / 3 + 1];
 }
 
 /*
 ******************************************************************************
-* 函数名称:	~USER_PIC_FLIP
+* 函数名称:	~USER_BLINE_TRANSFORM
 * 函数功能: 析构函数，将动态开辟的空间清除
 * 输入参数:	none
 * 输出参数:	none
@@ -43,11 +48,14 @@ USER_PIC_FLIP::USER_PIC_FLIP(BYTE* ARRAY1, int h, int w)
 * 注    意:
 *******************************************************************************
 */
-USER_PIC_FLIP::~USER_PIC_FLIP()
+USER_BLINE_TRANSFORM::~USER_BLINE_TRANSFORM()
 {
 	delete[] R_array;
 	delete[] G_array;
 	delete[] B_array;
+	delete[] newR_array;
+	delete[] newG_array;
+	delete[] newB_array;
 }
 
 /*
@@ -61,8 +69,8 @@ USER_PIC_FLIP::~USER_PIC_FLIP()
 
 /*
 ******************************************************************************
-* 函数名称:	Filp
-* 函数功能: 翻转
+* 函数名称:	BlinearTransform
+* 函数功能: 图像双线性变换的接口函数
 * 输入参数:	none
 * 输出参数:	none
 * 返 回 值:  void
@@ -70,14 +78,12 @@ USER_PIC_FLIP::~USER_PIC_FLIP()
 * 注    意:
 *******************************************************************************
 */
-void USER_PIC_FLIP::Filp()
+void USER_BLINE_TRANSFORM::BlinearTransform()
 {
 	SeparateRGB();
-	PicFilp(0);
+	DealRgbMatrixBlinearTransform();
 	UnionRGB();
 }
-
-
 
 /*
 ********************************************************************************
@@ -98,7 +104,7 @@ void USER_PIC_FLIP::Filp()
 * 注    意:
 *******************************************************************************
 */
-void USER_PIC_FLIP::SeparateRGB()
+void USER_BLINE_TRANSFORM::SeparateRGB()
 {
 	int j = 0;
 	for (int i = 0; i < ArraySize; i = i + 3)
@@ -122,14 +128,14 @@ void USER_PIC_FLIP::SeparateRGB()
 * 注    意:
 *******************************************************************************
 */
-void USER_PIC_FLIP::UnionRGB()
+void USER_BLINE_TRANSFORM::UnionRGB()
 {
 	int j = 0;
-	for (int i = 0; i < ArraySize; i = i + 3)
+	for (int i = 0; i < newArraySize; i = i + 3)
 	{
-		pixelArray[i + 2] = R_array[j];
-		pixelArray[i + 1] = G_array[j];
-		pixelArray[i + 0] = B_array[j];
+		newPixelArray[i + 2] = newR_array[j];
+		newPixelArray[i + 1] = newG_array[j];
+		newPixelArray[i + 0] = newB_array[j];
 
 		j++;
 	}
@@ -137,62 +143,36 @@ void USER_PIC_FLIP::UnionRGB()
 
 /*
 ******************************************************************************
-* 函数名称:	PicFilp
-* 函数功能: 翻转函数
-* 输入参数:	flag : 0 水平翻转  1 垂直翻转
-* 输出参数:	none
-* 返 回 值:  void
-* 创建日期:  2021年-10月-30日
-* 注    意:  
-*******************************************************************************
-*/
-void USER_PIC_FLIP::PicFilp(int flag)
-{
-	switch (flag)
-	{
-		case 0:
-			HFilp();
-			break;
-		case 1:
-			VFilp();
-			break;
-		default:
-			break;
-	}
-}
-
-/*
-******************************************************************************
-* 函数名称:	HFilp
-* 函数功能: 水平翻转函数
-* 输入参数:	none
+* 函数名称:	DealRgbMatrixBlinearTransform
+* 函数功能: RGB分量矩阵分别做双线性插值
+* 输入参数: none
 * 输出参数:	none
 * 返 回 值:  void
 * 创建日期:  2021年-10月-31日
-* 注    意:
+* 注    意: 该函数简单的对相邻的元素做平均，得到的结果作为插值结果
 *******************************************************************************
 */
-void USER_PIC_FLIP::HFilp()
+void USER_BLINE_TRANSFORM::DealRgbMatrixBlinearTransform()
 {
 	//动态建立二维数组
 	BYTE** matrixR;
 	BYTE** matrixG;
 	BYTE** matrixB;
-	matrixR = new BYTE * [high];
-	matrixG = new BYTE * [high];
-	matrixB = new BYTE * [high];
-	for (int j = 0; j < high; j++)
+	matrixR = new BYTE * [high * 2 - 1];
+	matrixG = new BYTE * [high * 2 - 1];
+	matrixB = new BYTE * [high * 2 - 1];
+	for (int j = 0; j < high * 2 - 1; j++)
 	{
-		matrixR[j] = new BYTE[width];
-		matrixG[j] = new BYTE[width];
-		matrixB[j] = new BYTE[width];
+		matrixR[j] = new BYTE[width * 2 - 1];
+		matrixG[j] = new BYTE[width * 2 - 1];
+		matrixB[j] = new BYTE[width * 2 - 1];
 	}
 
 	//初始化，向量转矩阵
 	int k = 0;
-	for (int i = 0; i < high; i++)
+	for (int i = 0; i < high * 2 - 1; i = i + 2)
 	{
-		for (int j = 0; j < width; j++)
+		for (int j = 0; j < width * 2 - 1; j = j + 2)
 		{
 			matrixR[i][j] = R_array[k];
 			matrixG[i][j] = G_array[k];
@@ -201,27 +181,37 @@ void USER_PIC_FLIP::HFilp()
 		}
 	}
 
-	//调用用户自定义的算法类，使用交换函数
-	USER_ALG user_alg;
-	for (int j = 0; j < width/2 - 1; j++) //j 列
+	//列方向一阶插值
+	for (int i = 1; i < high * 2 - 1; i = i + 2)
 	{
-		for (int i = 0; i < high; i++)// i 行
+		for (int j = 0; j < width * 2 - 1; j = j + 2)
 		{
-			user_alg.Swap(&matrixR[i][j], &matrixR[i][width - 1 - j]);
-			user_alg.Swap(&matrixG[i][j], &matrixG[i][width - 1 - j]);
-			user_alg.Swap(&matrixB[i][j], &matrixB[i][width - 1 - j]);
+			matrixR[i][j] = (BYTE)((matrixR[i - 1][j] + matrixR[i + 1][j]) / 2);
+			matrixG[i][j] = (BYTE)((matrixG[i - 1][j] + matrixG[i + 1][j]) / 2);
+			matrixB[i][j] = (BYTE)((matrixB[i - 1][j] + matrixB[i + 1][j]) / 2);
+		}
+	}
+
+	//行方向一阶插值
+	for (int i = 0; i < high * 2 - 1; i++)
+	{
+		for (int j = 1; j < width * 2 - 1; j = j + 2)
+		{
+			matrixR[i][j] = (BYTE)((matrixR[i][j - 1] + matrixR[i][j + 1]) / 2);
+			matrixG[i][j] = (BYTE)((matrixG[i][j - 1] + matrixG[i][j + 1]) / 2);
+			matrixB[i][j] = (BYTE)((matrixB[i][j - 1] + matrixB[i][j + 1]) / 2);
 		}
 	}
 
 	//矩阵转向量
 	k = 0;
-	for (int i = 0; i < high; i++)
+	for (int i = 0; i < high * 2 - 1; i++)
 	{
-		for (int j = 0; j < width; j++)
+		for (int j = 0; j < width * 2 - 1; j++)
 		{
-			R_array[k] = matrixR[i][j];
-			G_array[k] = matrixG[i][j];
-			B_array[k] = matrixB[i][j];
+			newR_array[k] = matrixR[i][j];
+			newG_array[k] = matrixG[i][j];
+			newB_array[k] = matrixB[i][j];
 			k++;
 		}
 	}
@@ -236,20 +226,4 @@ void USER_PIC_FLIP::HFilp()
 	delete[] matrixR;
 	delete[] matrixG;
 	delete[] matrixB;
-}
-
-/*
-******************************************************************************
-* 函数名称:	VFilp
-* 函数功能: 垂直翻转函数
-* 输入参数:	none
-* 输出参数:	none
-* 返 回 值:  void
-* 创建日期:  2021年-10月-31日
-* 注    意:
-*******************************************************************************
-*/
-void USER_PIC_FLIP::VFilp()
-{
-
 }

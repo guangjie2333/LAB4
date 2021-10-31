@@ -37,7 +37,7 @@ class USER_ALG
 	public:
 		void QuickSort(int* A, int N);//快速排序
 		void Swap(int* a, int* b);//交换两个数
-		
+		void Swap(BYTE* a, BYTE* b);//交换两个数
 	protected:
 		
 	private:

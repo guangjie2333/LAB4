@@ -192,6 +192,7 @@
     <ClInclude Include="USER_ALG.h" />
     <ClInclude Include="USER_ARITHMETIC.h" />
     <ClInclude Include="USER_BAR_CLASS_DLG.h" />
+    <ClInclude Include="USER_BLINE_TRANSFORM.h" />
     <ClInclude Include="USER_DEFINE.h" />
     <ClInclude Include="USER_FILTER.h" />
     <ClInclude Include="USER_FourierTrans.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="USER_ALG.cpp" />
     <ClCompile Include="USER_ARITHMETIC.cpp" />
     <ClCompile Include="USER_BAR_CLASS_DLG.cpp" />
+    <ClCompile Include="USER_BLINE_TRANSFORM.cpp" />
     <ClCompile Include="USER_FILTER.cpp" />
     <ClCompile Include="USER_HIS_EQU.cpp" />
     <ClCompile Include="USER_LINE_CHANGE_Dlg.cpp" />
