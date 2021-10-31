@@ -48,4 +48,7 @@ public:
 	afx_msg void MinFilter_MenuButtonUp();
 	afx_msg void EnhanceColor();
 	afx_msg void OnBnClickedButtonOpenbmp2();
+	afx_msg void TwoPic_Add();
+private:
+	void Get_PictureContro_RGBdata(HDC hDC1, LPRECT lpRect1, HDC hDC2, LPRECT lpRect2);
 };

@@ -31,6 +31,7 @@
 #include "USER_LINE_CHANGE_Dlg.h"	//线性变换(UI)
 #include "USER_HIS_EQU.h"			//直方图均衡化
 #include "USER_FILTER.h"			//滤波
+#include "USER_ARITHMETIC.h"        //图像运算
 //#include "stdlib.h"
 
 /*
@@ -50,6 +51,9 @@ CString EntName;
 **********************************************************************
 */
 void Cal_HSV_Scale(HSV_SLIDER_STRUCT hsv_slider_struct,float *hScale, float* sScale, float* vScale);  //调节滚动条实际上是在调节缩放系数
+void Get_PictureContro_RGBdata(HDC hDC, LPRECT lpRect, BYTE* res);
+
+
 
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -117,6 +121,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication1Dlg, CDialogEx)
 	ON_COMMAND(ID_32782, &CMFCApplication1Dlg::MinFilter_MenuButtonUp)
 	ON_COMMAND(ID_32783, &CMFCApplication1Dlg::EnhanceColor)
 	ON_BN_CLICKED(IDC_BUTTON_OPENBMP2, &CMFCApplication1Dlg::OnBnClickedButtonOpenbmp2)
+	ON_COMMAND(ID_32784, &CMFCApplication1Dlg::TwoPic_Add)
 END_MESSAGE_MAP()
 
 
@@ -253,7 +258,7 @@ void CMFCApplication1Dlg::OnBnClickedButtonOpenbmp()
 			bmpdata1.bmpFile.Read(bmpdata1.pBmpData, dataBytes);  //存储图像数据(以文件指针为起点开始读dataBytes个数据)
 			bmpdata1.bmpFile.Close();
 
-/*
+
 
 			//显示图像1	
 			CWnd* pWnd = GetDlgItem(IDC_STATIC_PICTURE); //获得pictrue控件窗口的句柄			
@@ -261,25 +266,14 @@ void CMFCApplication1Dlg::OnBnClickedButtonOpenbmp()
 			pWnd->GetClientRect(&rect); //获得pictrue控件所在的矩形区域			
 			CDC* pDC = pWnd->GetDC(); //获得pictrue控件的DC			
 			pDC->SetStretchBltMode(COLORONCOLOR);
-			StretchDIBits(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, bmpdata.bmpInfo.biWidth, bmpdata.bmpInfo.biHeight, bmpdata.pBmpData, pBmpInfo, DIB_RGB_COLORS, SRCCOPY);
-			
-			
-			//显示图像2	
-			pWnd = GetDlgItem(IDC_STATIC_PICTURE2); //获得pictrue控件窗口的句柄			
-			pWnd->GetClientRect(&rect); //获得pictrue控件所在的矩形区域			
-			pDC = pWnd->GetDC(); //获得pictrue控件的DC		
-			pDC->SetStretchBltMode(COLORONCOLOR);
-			StretchDIBits(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, bmpdata.bmpInfo.biWidth, bmpdata.bmpInfo.biHeight, bmpdata.pBmpData, pBmpInfo, DIB_RGB_COLORS, SRCCOPY);
-			
-			//打印信息
-			TRACE(" rect.Width() = %d , rect.Height() = %d, bmpInfo.biWidth = %d ,  bmpInfo.biHeight = %d \n\n",rect.Width(), rect.Height(), bmpdata.bmpInfo.biWidth, bmpdata.bmpInfo.biHeight);
-*/			
+			StretchDIBits(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, bmpdata1.bmpInfo.biWidth, bmpdata1.bmpInfo.biHeight, bmpdata1.pBmpData, pBmpInfo, DIB_RGB_COLORS, SRCCOPY);
+	
 
 		}
 
 
 		//way 2 
-		CWnd* m_pWnd;
+	/*	CWnd* m_pWnd;
 
 		m_pWnd = this->GetDlgItem(IDC_STATIC_PICTURE);  //  IDC_PICTURE此为Picture控件ID 
 
@@ -296,7 +290,7 @@ void CMFCApplication1Dlg::OnBnClickedButtonOpenbmp()
 			pWnd->GetClientRect(&rect);//获取句柄指向控件区域的大小  
 			CDC* pDc = NULL;
 			pDc = pWnd->GetDC();//获取picture的DC  
-			pDc->SetStretchBltMode(STRETCH_HALFTONE);
+			pDc->SetStretchBltMode(COLORONCOLOR);
 			image.Draw(pDc->m_hDC, rect);
 			ReleaseDC(pDc);
 		}
@@ -307,7 +301,7 @@ void CMFCApplication1Dlg::OnBnClickedButtonOpenbmp()
 			 e->GetErrorMessage(szError,1024);   //  e.GetErrorMessage(szError,1024); 
 			 ::AfxMessageBox(szError);
 		}
-
+     */
 
 	}
 }
@@ -349,11 +343,19 @@ void CMFCApplication1Dlg::OnBnClickedButtonOpenbmp2()
 			bmpdata2.bmpFile.Read(bmpdata2.pBmpData, dataBytes);  //存储图像数据(以文件指针为起点开始读dataBytes个数据)
 			bmpdata2.bmpFile.Close();
 
+			//显示图像2	
+			CWnd* pWnd = GetDlgItem(IDC_STATIC_PICTURE2); //获得pictrue控件窗口的句柄		
+			CRect rect;
+			pWnd->GetClientRect(&rect); //获得pictrue控件所在的矩形区域			
+			CDC* pDC = pWnd->GetDC(); //获得pictrue控件的DC		
+			pDC->SetStretchBltMode(COLORONCOLOR);
+			StretchDIBits(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, bmpdata2.bmpInfo.biWidth, bmpdata2.bmpInfo.biHeight, bmpdata2.pBmpData, pBmpInfo, DIB_RGB_COLORS, SRCCOPY);
+
 		}
 
 
 		//way 2 
-		CWnd* m_pWnd;
+	/*	CWnd* m_pWnd;
 
 		m_pWnd = this->GetDlgItem(IDC_STATIC_PICTURE2);  //  IDC_PICTURE此为Picture控件ID 
 
@@ -370,7 +372,7 @@ void CMFCApplication1Dlg::OnBnClickedButtonOpenbmp2()
 			pWnd->GetClientRect(&rect);//获取句柄指向控件区域的大小  
 			CDC* pDc = NULL;
 			pDc = pWnd->GetDC();//获取picture的DC  
-			pDc->SetStretchBltMode(STRETCH_HALFTONE);
+			pDc->SetStretchBltMode(COLORONCOLOR);
 			image.Draw(pDc->m_hDC, rect);
 			ReleaseDC(pDc);
 
@@ -381,7 +383,7 @@ void CMFCApplication1Dlg::OnBnClickedButtonOpenbmp2()
 
 			e->GetErrorMessage(szError, 1024);   //  e.GetErrorMessage(szError,1024); 
 			::AfxMessageBox(szError);
-		}
+		}*/
 
 
 	}
@@ -412,8 +414,7 @@ void CMFCApplication1Dlg::OnMouseMove(UINT nFlags, CPoint point)
 
 
 	//确保鼠标在图像内移动
-	if ((point.x >= 12 && point.x <= 12 + width && point.y >= 76 && point.y <= 76 + high) || 
-		(point.x >= 683 && point.x <= 683 + width && point.y >= 76 && point.y <= 76 + high))
+	if (1)
 	{
 		TRACE("捕捉到了鼠标移动，当前位置 X = %d  Y = %d \n\n", point.x, point.y);
 		SetDlgItemInt(IDC_EDIT_X, point.x);			 //写入坐标值x
@@ -826,7 +827,7 @@ void CMFCApplication1Dlg::EnhanceColor()
 	DWORD dataBytes = bmpdata1.bmpHeader.bfSize - bmpdata1.bmpHeader.bfOffBits;//图像数据大小，单位为字节
 	BYTE* pixelArray = (BYTE*)new char[dataBytes];
 	memcpy(pixelArray, bmpdata1.pBmpData, dataBytes);
-	BYTE* newPixelArray = (BYTE*)new char[dataBytes * 3];;
+	BYTE* newPixelArray = (BYTE*)new char[dataBytes * 3];
 	for (int i = 0; i < dataBytes ; i++)
 	{
 		//不好意思，用了这么恶心的else if
@@ -875,4 +876,150 @@ void CMFCApplication1Dlg::EnhanceColor()
 }
 
 
+
+
+
+
+
+//LAB4
+/*
+******************************************************************************
+* 函数名称:	TwoPic_Add
+* 函数功能: 菜单栏，实验四，两幅图相加
+* 输入参数: none
+* 输出参数:	none
+* 返 回 值: void
+* 创建日期: 2021年-10月-31日
+* 注    意: 基于RGB三通道图
+*******************************************************************************
+*/
+void CMFCApplication1Dlg::TwoPic_Add()
+{
+	CWnd* pWnd1 = GetDlgItem(IDC_STATIC_PICTURE); //获得pictrue控件窗口的句柄			
+	CRect rect1;
+	pWnd1->GetClientRect(&rect1);
+	CDC* pDC1 = pWnd1->GetDC(); //获得pictrue控件的DC
+
+	CWnd* pWnd2 = GetDlgItem(IDC_STATIC_PICTURE2); //获得pictrue控件窗口的句柄			
+	CRect rect2;
+	pWnd2->GetClientRect(&rect2);
+	CDC* pDC2 = pWnd2->GetDC(); //获得pictrue控件的DC
+	
+	/***********************************************
+
+	处理第一幅图
+
+	*************************************************/
+
+	int Width1 = rect1.right - rect1.left;
+	int Height1 = rect1.bottom - rect1.top;
+	HDC hdc1 = pDC1->GetSafeHdc();
+	HDC memDC1 = CreateCompatibleDC(hdc1);//内存DC 
+	HBITMAP memBitmap1 = CreateCompatibleBitmap(hdc1, Width1, Height1); //建立和屏幕兼容的bitmap  
+	HBITMAP hOldBitmap1 = (HBITMAP)SelectObject(memDC1, memBitmap1);//将memBitmap选入内存DC 
+	BitBlt(memDC1, 0, 0, Width1, Height1,hdc1, rect1.left, rect1.top,SRCCOPY);//复制屏幕图像到内存DC 
+
+	  //以下代码保存memDC中的位图到文件 
+	BITMAP bmpInfo1;
+	GetObject(memBitmap1, sizeof(bmpInfo1), &bmpInfo1);//获得位图信息 
+
+	DWORD bmpBytesSize1 = bmpInfo1.bmWidthBytes * bmpInfo1.bmHeight * 3;
+
+	BITMAPFILEHEADER bfh1 = { 0 };//位图文件头 
+	bfh1.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);//到位图数据的偏移量 
+	bfh1.bfSize = bfh1.bfOffBits + bmpBytesSize1;//文件总的大小 
+	bfh1.bfType = (WORD)0x4d42;
+
+	BITMAPINFOHEADER bih1 = { 0 };//位图信息头 
+	bih1.biBitCount = bmpInfo1.bmBitsPixel;//每个像素字节大小 
+	bih1.biCompression = BI_RGB;
+	bih1.biHeight = bmpInfo1.bmHeight;//高度 
+	bih1.biPlanes = 1;
+	bih1.biSize = sizeof(BITMAPINFOHEADER);
+	bih1.biSizeImage = bmpBytesSize1;//图像数据大小 
+	bih1.biWidth = bmpInfo1.bmWidth;//宽度  
+
+	BYTE* p1 = new BYTE[bmpBytesSize1];//申请内存保存位图数据  
+	GetDIBits(memDC1, memBitmap1, 0, Height1,
+		p1, (LPBITMAPINFO)&bih1, DIB_RGB_COLORS);//获取位图数据 
+
+	/***********************************************
+
+	处理第二幅图
+
+	*************************************************/
+
+	int Width2 = rect2.right - rect2.left;
+	int Height2 = rect2.bottom - rect2.top;
+	HDC hDC2 = pDC2->GetSafeHdc();
+	HDC memDC2 = CreateCompatibleDC(hDC2);//内存DC 
+	HBITMAP memBitmap2 = CreateCompatibleBitmap(hDC2, Width2, Height2); //建立和屏幕兼容的bitmap  
+	HBITMAP hOldBitmap2 = (HBITMAP)SelectObject(memDC2, memBitmap2);//将memBitmap选入内存DC 
+	BitBlt(memDC2, 0, 0, Width2, Height2,
+		hDC2, rect2.left, rect2.top,
+		SRCCOPY);//复制屏幕图像到内存DC 
+
+	  //以下代码保存memDC中的位图到文件 
+	BITMAP bmpInfo2;
+	GetObject(memBitmap2, sizeof(bmpInfo2), &bmpInfo2);//获得位图信息 
+
+	DWORD bmpBytesSize2 = bmpInfo2.bmWidthBytes * bmpInfo2.bmHeight * 3;
+
+	BITMAPFILEHEADER bfh2 = { 0 };//位图文件头 
+	bfh2.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);//到位图数据的偏移量 
+	bfh2.bfSize = bfh2.bfOffBits + bmpBytesSize2;//文件总的大小 
+	bfh2.bfType = (WORD)0x4d42;
+
+	BITMAPINFOHEADER bih2 = { 0 };//位图信息头 
+	bih2.biBitCount = bmpInfo2.bmBitsPixel;//每个像素字节大小 
+	bih2.biCompression = BI_RGB;
+	bih2.biHeight = bmpInfo2.bmHeight;//高度 
+	bih2.biPlanes = 1;
+	bih2.biSize = sizeof(BITMAPINFOHEADER);
+	bih2.biSizeImage = bmpBytesSize2;//图像数据大小 
+	bih2.biWidth = bmpInfo2.bmWidth;//宽度  
+
+	BYTE* p2 = (BYTE*)new char[bmpBytesSize2];//申请内存保存位图数据  
+	GetDIBits(memDC2, memBitmap2, 0, Height2,
+		p2, (LPBITMAPINFO)&bih2, DIB_RGB_COLORS);//获取位图数据 
+
+	  //正常的还要对256及以下的颜色加颜色映射表，
+	  // 但是现在的显示模式基本上都是真彩（24或32位）显示，因此忽略此项
+
+
+
+	BYTE* p3 = new BYTE[bmpBytesSize1];
+	USER_ARITHMETIC user_arithmetic(p1, p2, bmpBytesSize1, p3);
+	user_arithmetic.Add();
+	// 显示图像3
+	CWnd* pWnd = GetDlgItem(IDC_STATIC_PICTURE3);					//获得pictrue控件窗口的句柄	
+	CRect rect;
+	pWnd->GetClientRect(&rect);										//获得pictrue控件所在的矩形区域			
+	CDC* pDC = pWnd->GetDC();										//获得pictrue控件的DC			
+	pDC->SetStretchBltMode(COLORONCOLOR);
+	BITMAPINFO* pBmpInfo = (BITMAPINFO*)new char[sizeof(BITMAPINFOHEADER)];
+	memcpy(pBmpInfo, &bih1, sizeof(BITMAPINFOHEADER));
+
+	StretchDIBits(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, bmpInfo1.bmWidth, bmpInfo1.bmHeight, p3, pBmpInfo, DIB_RGB_COLORS, SRCCOPY);
+
+	/***********************************************
+
+	结束清理工作
+
+	*************************************************/
+
+	delete[] p1;
+
+	SelectObject(memDC1, hOldBitmap1);
+	DeleteObject(memBitmap1);
+	DeleteDC(memDC1);
+
+	delete[] p2;
+
+	SelectObject(memDC2, hOldBitmap2);
+	DeleteObject(memBitmap2);
+	DeleteDC(memDC2);
+
+	delete[] p3;
+}
 
